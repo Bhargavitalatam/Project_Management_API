@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: project-management-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: project-management-db
+          property: connectionString
+      - key: SECRET_KEY
+        value: dfc3c0ef2ea5d02f37e42d65cd98444458d9299b8214309c6cd7919f91a27e7f
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 60
+
+databases:
+  - name: project-management-db
+    databaseName: project_db
+    user: postgres
