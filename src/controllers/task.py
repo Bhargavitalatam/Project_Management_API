@@ -28,6 +28,15 @@ def list_tasks(
     task_service = TaskService(db)
     return task_service.get_tasks_by_project(projectId, current_user.id)
 
+@router.get("/api/tasks/{id}", response_model=TaskResponse)
+def get_task(
+    id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    task_service = TaskService(db)
+    return task_service.get_task_by_id(id, current_user.id)
+
 @router.put("/api/tasks/{id}", response_model=TaskResponse)
 def update_task(
     id: int,

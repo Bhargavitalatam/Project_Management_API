@@ -86,6 +86,11 @@ def test_full_auth_and_project_lifecycle(client: TestClient):
     assert task["project_id"] == project_id
     task_id = task["id"]
 
+    # 5.5 Retrieve specific task (GET /api/tasks/{id})
+    get_task_response = client.get(f"/api/tasks/{task_id}", headers=headers)
+    assert get_task_response.status_code == 200
+    assert get_task_response.json()["title"] == "Write unit tests"
+
     # 6. Update task status (PUT /api/tasks/{id})
     update_task_response = client.put(
         f"/api/tasks/{task_id}",
@@ -125,6 +130,10 @@ def test_full_auth_and_project_lifecycle(client: TestClient):
         headers=bob_headers
     )
     assert bob_create_task.status_code == 403
+
+    # Bob attempts to get Alice's task (should be 403 Forbidden)
+    bob_get_task = client.get(f"/api/tasks/{task_id}", headers=bob_headers)
+    assert bob_get_task.status_code == 403
 
     # Bob attempts to update Alice's task (should be 403 Forbidden)
     bob_update_task = client.put(
