@@ -16,4 +16,4 @@ services:
 databases:
   - name: project-management-db
     databaseName: project_db
-    user: postgres
+    user: pmapi_user
