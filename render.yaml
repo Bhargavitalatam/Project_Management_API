@@ -1,6 +1,7 @@
 services:
   - type: web
     name: project-management-api
+    plan: free
     runtime: docker
     dockerfilePath: ./Dockerfile
     envVars:
@@ -17,3 +18,4 @@ databases:
   - name: project-management-db
     databaseName: project_db
     user: pmapi_user
+    plan: free

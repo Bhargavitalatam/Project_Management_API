@@ -11,8 +11,25 @@ from src.services.auth import AuthService
 from src.controllers import auth_router, project_router, task_router, user_router
 import traceback
 
+import time
+from sqlalchemy.exc import OperationalError
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Wait for database to be ready (up to 60 seconds)
+    retries = 30
+    connected = False
+    while retries > 0:
+        try:
+            # Check connection
+            with engine.connect() as conn:
+                connected = True
+                break
+        except OperationalError as e:
+            retries -= 1
+            print(f"Database not ready yet (remaining retries: {retries}). Error: {e}")
+            time.sleep(2)
+
     # Auto-create all tables in the database
     Base.metadata.create_all(bind=engine)
     
