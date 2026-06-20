@@ -31,7 +31,7 @@ def test_full_auth_and_project_lifecycle(client: TestClient):
     token = token_data["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    # Verify protected profile endpoints (Requirement 3)
+    # Verify protected profile endpoints (Requirement 3 & 4)
     profile_response = client.get("/api/auth/profile", headers=headers)
     assert profile_response.status_code == 200
     assert profile_response.json()["email"] == "alice@example.com"
@@ -39,13 +39,19 @@ def test_full_auth_and_project_lifecycle(client: TestClient):
     me_response = client.get("/api/auth/me", headers=headers)
     assert me_response.status_code == 200
     assert me_response.json()["email"] == "alice@example.com"
+
+    users_me_response = client.get("/api/users/me", headers=headers)
+    assert users_me_response.status_code == 200
+    assert users_me_response.json()["email"] == "alice@example.com"
+    assert "password_hash" not in users_me_response.json()
+    assert "password" not in users_me_response.json()
     
     # Missing token -> should raise 401
-    profile_no_auth = client.get("/api/auth/profile")
+    profile_no_auth = client.get("/api/users/me")
     assert profile_no_auth.status_code == 401
     
     # Invalid token -> should raise 401
-    profile_bad_auth = client.get("/api/auth/profile", headers={"Authorization": "Bearer badtoken"})
+    profile_bad_auth = client.get("/api/users/me", headers={"Authorization": "Bearer badtoken"})
     assert profile_bad_auth.status_code == 401
 
     # 3. Create a project

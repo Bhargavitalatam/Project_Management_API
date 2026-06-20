@@ -8,7 +8,7 @@ from src.models.base import Base
 from src.models.user import User
 from src.models.project import Project
 from src.services.auth import AuthService
-from src.controllers import auth_router, project_router, task_router
+from src.controllers import auth_router, project_router, task_router, user_router
 import traceback
 
 @asynccontextmanager
@@ -54,6 +54,7 @@ app = FastAPI(
 app.include_router(auth_router)
 app.include_router(project_router)
 app.include_router(task_router)
+app.include_router(user_router)
 
 # Custom handler for FastAPI HTTPExceptions to return consistent {"error": detail} format
 @app.exception_handler(HTTPException)
