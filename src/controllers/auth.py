@@ -51,3 +51,11 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
     user = auth_service.authenticate_user(request)
     access_token = auth_service.create_access_token(user.id)
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/profile", response_model=UserResponse)
+def get_profile(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@router.get("/me", response_model=UserResponse)
+def get_me(current_user: User = Depends(get_current_user)):
+    return current_user

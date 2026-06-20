@@ -31,6 +31,23 @@ def test_full_auth_and_project_lifecycle(client: TestClient):
     token = token_data["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
+    # Verify protected profile endpoints (Requirement 3)
+    profile_response = client.get("/api/auth/profile", headers=headers)
+    assert profile_response.status_code == 200
+    assert profile_response.json()["email"] == "alice@example.com"
+
+    me_response = client.get("/api/auth/me", headers=headers)
+    assert me_response.status_code == 200
+    assert me_response.json()["email"] == "alice@example.com"
+    
+    # Missing token -> should raise 401
+    profile_no_auth = client.get("/api/auth/profile")
+    assert profile_no_auth.status_code == 401
+    
+    # Invalid token -> should raise 401
+    profile_bad_auth = client.get("/api/auth/profile", headers={"Authorization": "Bearer badtoken"})
+    assert profile_bad_auth.status_code == 401
+
     # 3. Create a project
     proj_response = client.post(
         "/api/projects",
